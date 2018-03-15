@@ -10,7 +10,7 @@ App = React.createClass({
     };
 },
 
-    getGif: function() {
+    getGif: function(searchingText) {
         return new Promise (
             function (resolve, reject) {
                 var url = GIPHY_API_URL + '/v1/gifs/random?api_key=' + GIPHY_PUB_KEY + '&tag=' + searchingText;  // 2.
@@ -22,20 +22,15 @@ App = React.createClass({
                         var gif = {  // 5.
                         url: data.fixed_width_downsampled_url,
                         sourceUrl: data.url
+                    }
                         resolve(gif);
                     } else {
                         reject(error);
                 }
-
             }
-        };
-
-    
-    }
-
-getGif();
-.then(gif);
-.catch(error);
+            xhr.send();
+        });
+    },
 
 
 
@@ -43,14 +38,21 @@ getGif();
         this.setState({
           loading: true  // 2.
         });
-        this.getGif(searchingText, function(gif) {  // 3.
-          this.setState({  // 4
-            loading: false,  // a
-            gif: gif,  // b
-            searchingText: searchingText  // c
-          });
-        }.bind(this));
-      },
+
+
+        this.getGif(searchingText).then(function(gif){
+            this.setState({  // 4
+                loading: false,  // a
+                gif: gif,  // b
+                searchingText: searchingText  // c
+            });     
+
+        }.bind(this))
+        .catch(function(error){
+            console.log(error);
+        })
+    },
+
 
     render: function() {
 
